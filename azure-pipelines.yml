@@ -10,14 +10,14 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
+  
 - task: Docker@2
   inputs:
     command: 'login'
+    
 - task: DotNetCoreCLI@2
   inputs:
+    projects: 'TestAPI\TestAPI.csproj'
     command: 'publish'
     publishWebProjects: true
     arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
