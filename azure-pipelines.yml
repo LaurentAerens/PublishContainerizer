@@ -29,7 +29,7 @@ steps:
   displayName: 'Basic Publish DemoAppsWithPrivateNugetFeed'
   inputs:
     command: 'publish'
-    projects: 'DemoAppsWithPrivateNugetFeed/DemoAppsWithPrivateNugetFeed.csproj'
+    projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
     publishWebProjects: false
     ZipAfterPublish: false
     arguments: '/t:PublishContainer -p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
