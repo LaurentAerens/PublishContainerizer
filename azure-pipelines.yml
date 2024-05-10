@@ -23,3 +23,11 @@ steps:
     publishWebProjects: true
     arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
     zipAfterPublish: false
+
+- task: DotNetCoreCLI@2
+  inputs:
+    projects: 'DemoAppWithPrivateNugetFeed\DemoAppWithPrivateNugetFeed.csproj'
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
+    zipAfterPublish: false    
