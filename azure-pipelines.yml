@@ -13,6 +13,7 @@ steps:
   
 - task: Docker@2
   inputs:
+    containerRegistry: 'MyDemoACR'
     command: 'login'
     
 - task: DotNetCoreCLI@2
