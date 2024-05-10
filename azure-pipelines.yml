@@ -25,6 +25,24 @@ steps:
     arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
     zipAfterPublish: false
 
+
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+    projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
+
+
+- task: DotNetCoreCLI@2
+  displayName: 'test Publish DemoAppsWithPrivateNugetFeed'
+  inputs:
+    command: 'publish'
+    projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
+    publishWebProjects: false
+    ZipAfterPublish: false
+
+
+
 - task: DotNetCoreCLI@2
   displayName: 'Basic Publish DemoAppsWithPrivateNugetFeed'
   inputs:
