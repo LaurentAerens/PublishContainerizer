@@ -45,8 +45,6 @@ steps:
     ArtifactName: 'nuget-package'
     publishLocation: 'Container'
     targetPath: '$(Build.ArtifactStagingDirectory)/$(ArtifactName)'
-    artifactType: 'Container'
-    containerFolder: 'LocalPackagesDemo'
 
 - task: DotNetCoreCLI@2
   displayName: 'Push NuGet package locally'
