@@ -16,19 +16,34 @@ steps:
     containerRegistry: 'MyDemoACR'
     command: 'login'
     
+- task: PowerShell@2
+  displayName: 'Change directory to TestAPI'
+  inputs:
+    targetType: 'inline'
+    script: |
+      cd TestAPI
+
 - task: DotNetCoreCLI@2
   displayName: 'Build the TestAPI project'
   inputs:
-    projects: 'TestAPI\TestAPI.csproj'
+    projects: '.\TestAPI.csproj'
     command: 'publish'
     publishWebProjects: true
     arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
     zipAfterPublish: false
 
+- task: PowerShell@2
+  displayName: 'Change directory to DemoAppWithPrivateNugetFeed'
+  inputs:
+    targetType: 'inline'
+    script: |
+      cd ..
+      cd DemoAppWithPrivateNugetFeed    
+
 - task: DotNetCoreCLI@2
   displayName: 'Build the ConsoleAppWithNugetFeed project'
   inputs:
-    projects: 'DemoAppWithPrivateNugetFeed\DemoAppWithPrivateNugetFeed.csproj'
+    projects: 'DemoAppWithPrivateNugetFeed.csproj'
     command: 'publish'
     arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
     zipAfterPublish: false    
