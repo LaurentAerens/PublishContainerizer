@@ -47,3 +47,9 @@ steps:
     targetPath: '$(Build.ArtifactStagingDirectory)/$(ArtifactName)'
     artifactType: 'Container'
     containerFolder: 'LocalPackagesDemo'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Push NuGet package locally'
+  inputs:
+    command: 'custom'
+    custom: 'nuget push --source "LocalPackagesDemo" --api-key az $(Build.ArtifactStagingDirectory)/$(ArtifactName)'
