@@ -2,6 +2,10 @@ trigger:
   branches:
     include:
       - main
+  paths:
+    include:
+      - HelloWorldContainerizedDemo/*
+
 
 pool:
   vmImage: 'ubuntu-latest'

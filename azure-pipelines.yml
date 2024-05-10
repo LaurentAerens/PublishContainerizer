@@ -19,7 +19,7 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: 'Basic Publish TestAPI'
   inputs:
-    projects: 'TestAPI\TestAPI.csproj'
+    projects: 'TestAPI/TestAPI.csproj'
     command: 'publish'
     publishWebProjects: false
     arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
@@ -29,7 +29,7 @@ steps:
   displayName: 'Basic Publish DemoAppsWithPrivateNugetFeed'
   inputs:
     command: 'publish'
-    projects: 'DemoAppsWithPrivateNugetFeed\DemoAppsWithPrivateNugetFeed.csproj'
+    projects: 'DemoAppsWithPrivateNugetFeed/DemoAppsWithPrivateNugetFeed.csproj'
     publishWebProjects: false
     ZipAfterPublish: false
     arguments: '/t:PublishContainer -p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
