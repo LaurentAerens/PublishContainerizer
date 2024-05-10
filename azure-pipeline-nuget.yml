@@ -20,20 +20,20 @@ steps:
   displayName: 'Restore NuGet packages'
   inputs:
     command: 'restore'
-    projects: 'HelloWorld/HelloWorld.csproj'
+    projects: 'HelloWorld/HelloWorldAerensDemo.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build'
   inputs:
     command: 'build'
-    projects: 'HelloWorld/HelloWorld.csproj'
+    projects: 'HelloWorld/HelloWorldAerensDemo.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Pack'
   inputs:
     command: 'pack'
-    packagesToPack: 'HelloWorld/HelloWorld.csproj'
+    packagesToPack: 'HelloWorld/HelloWorldAerensDemo.csproj'
     versioningScheme: 'byEnvVar'
     versionEnvVar: 'nugetPackageVersion'
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
