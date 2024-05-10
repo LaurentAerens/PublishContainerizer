@@ -50,4 +50,4 @@ steps:
   displayName: 'Push NuGet package locally'
   inputs:
     command: 'custom'
-    custom: 'nuget push --source "LocalPackagesDemo" --api-key az $(Build.ArtifactStagingDirectory)/$(ArtifactName)'
+    custom: 'nuget push --source "https://pkgs.dev.azure.com/LaurentAerens/2c2e3cab-e1e3-45e4-aa52-0331175b406e/_packaging/LocalPackagesDemo/nuget/v3/index.json" --api-key az $(Build.ArtifactStagingDirectory)/nuget-package/HelloWorld.1.0.0.nupkg'
