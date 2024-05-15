@@ -25,6 +25,15 @@ steps:
     arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
     zipAfterPublish: false
 
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet Packages'
+  inputs:
+    command: 'restore'
+    projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
+    feedsToUse: 'config'
+    nugetConfigPath: 'DemoAppWithPrivateNugetFeed/nuget.config'
+
 - task: DotNetCoreCLI@2
   displayName: 'Basic Publish DemoAppsWithPrivateNugetFeed'
   inputs:
@@ -33,5 +42,3 @@ steps:
     publishWebProjects: false
     ZipAfterPublish: false
     arguments: '/t:PublishContainer -p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
-    feedsToUse: 'config'
-    nugetConfigPath: 'DemoAppWithPrivateNugetFeed/nuget.config'
