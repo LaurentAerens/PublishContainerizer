@@ -26,15 +26,21 @@ steps:
     zipAfterPublish: false
 
 
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet Packages'
+  inputs:
+    command: 'restore'
+    projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
+    feedsToUse: 'config'
+    nugetConfigPath: 'nuget.config'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build DemoAppsWithPrivateNugetFeed'
   inputs:
     command: 'build'
     projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
-    feedsToUse: 'select'
-    vstsFeed: '2c2e3cab-e1e3-45e4-aa52-0331175b406e/LocalPackagesDemo'
-
+    feedsToUse: 'config'
+    nugetConfigPath: 'nuget.config'
 
 - task: DotNetCoreCLI@2
   displayName: 'test Publish DemoAppsWithPrivateNugetFeed'
@@ -43,8 +49,6 @@ steps:
     projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
     publishWebProjects: false
     ZipAfterPublish: false
-    feedsToUse: 'select'
-    vstsFeed: '2c2e3cab-e1e3-45e4-aa52-0331175b406e/LocalPackagesDemo'
 
 
 
@@ -56,5 +60,3 @@ steps:
     publishWebProjects: false
     ZipAfterPublish: false
     arguments: '/t:PublishContainer -p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
-    feedsToUse: 'select'
-    vstsFeed: '2c2e3cab-e1e3-45e4-aa52-0331175b406e/LocalPackagesDemo'
