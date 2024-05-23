@@ -50,5 +50,19 @@ steps:
     projects: 'TestAPI/TestAPI.csproj'
     command: 'publish'
     publishWebProjects: false
-    arguments: '-p ContainerRegistry=myblogcontainerizedemo.azurecr.io -p ContainerRepository=testapiAlpine -p ContainerFamily=alpine -p ContainerRuntimeIdentifier=linux-x64 -p ContainerImageTags=\'"1.0.0;latest"\' -p ContainerUser=root'
-    zipAfterPublish: false
+    agruments: >-
+        -p PublishProfile="DefaultContainer"
+        -p ContainerRepository="testapiAlpine"
+        -p ContainerImageTags="\"$(Build.BuildNumber);latest\""
+        -p Version="$(Build.BuildNumber)"
+        -p ContainerRegistry="myblogcontainerizedemo.azurecr.io"
+        -p ContainerUser="root"
+        -p ContainerFamily="alpine"
+        -p ContainerRuntimeIdentifier="linux-x64"
+    zipAfterPublish: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'artifacts'
