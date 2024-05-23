@@ -9,10 +9,6 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-parameters:
-  - name: ContainerImageTag
-    type: string
-    default: 'latest'
 steps:
   
 - task: Docker@2
@@ -56,9 +52,9 @@ steps:
     publishWebProjects: false
     arguments: |
       -p ContainerRegistry=myblogcontainerizedemo.azurecr.io
-      -p ContainerRepository= testapiAlpine
-      -p ContainerFamily= alpine
+      -p ContainerRepository=testapiAlpine
+      -p ContainerFamily=alpine
       -p ContainerRuntimeIdentifier=linux-x64
-      -p ContainerImageTag=${{parameters.ContainerImageTag}}
+      -p ContainerImageTags='"1.0.0;latest"'
       -p ContainerUser=root
     zipAfterPublish: false
