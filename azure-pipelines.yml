@@ -9,6 +9,10 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+parameters:
+  - name: ContainerImageTag
+    type: string
+    default: 'latest'
 steps:
   
 - task: Docker@2
@@ -42,3 +46,19 @@ steps:
     publishWebProjects: false
     ZipAfterPublish: false
     arguments: '/t:PublishContainer -p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
+
+
+- task: DotNetCoreCLI@2
+  displayName: 'Advanced Publish TestAPI'
+  inputs:
+    projects: 'TestAPI/TestAPI.csproj'
+    command: 'publish'
+    publishWebProjects: false
+    arguments: |
+      -p ContainerRegistry=myblogcontainerizedemo.azurecr.io
+      -p ContainerRepository= testapiAlpine
+      -p ContainerFamily= alpine
+      -p ContainerRuntimeIdentifier=linux-x64
+      -p ContainerImageTag=${{parameters.ContainerImageTag}}
+      -p ContainerUser=root
+    zipAfterPublish: false
