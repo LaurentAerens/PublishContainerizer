@@ -59,10 +59,4 @@ steps:
         -p ContainerUser="root"
         -p ContainerFamily="alpine"
         -p ContainerRuntimeIdentifier="linux-x64"
-    zipAfterPublish: true
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifacts'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'artifacts'
+    zipAfterPublish: false
