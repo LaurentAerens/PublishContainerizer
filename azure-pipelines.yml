@@ -53,8 +53,8 @@ steps:
     arguments: >-
         -p PublishProfile="DefaultContainer"
         -p ContainerRepository="testapiAlpine"
-        -p ContainerImageTags="\"$(Build.BuildNumber);latest\""
-        -p Version="$(Build.BuildNumber)"
+        -p ContainerImageTags="\"1.0.0;latest\""
+        -p Version="1.0.0.0"
         -p ContainerRegistry="myblogcontainerizedemo.azurecr.io"
         -p ContainerUser="root"
         -p ContainerFamily="alpine"
