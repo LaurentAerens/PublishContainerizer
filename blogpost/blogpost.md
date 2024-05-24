@@ -1,4 +1,4 @@
-# Containerize a .NET app without using Dockerfiles
+# Containerize a .NET app without using Dockerfile
 Are you tired of writing Dockerfiles for your .NET applications? Do you want to containerize your .NET applications without using Dockerfiles? Then this blog post is for you!
 Being part of a modern company that is focused on the cloud you might think we all love Docker and Containers. But the truth is some (amazing) application developers think it is unnecessary.
 They are used to just Zipping there file and deploying it to a PaaS service. They are no containerize guys, they are .net developers. And it seems that microsoft agrees with them.
@@ -15,6 +15,31 @@ dotnet tool install -g dotnet-build-image
 After installing the tool you can run the following command to build an image:
 ```bash
 dotnet build-image -t {name}:{tag}
+```
+This actually generate a temporary dockerfile and then builds the image. For my api the dockerfile looks like this:
+```dockerfile
+# Publish application
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+USER 0
+COPY --from=mcr.microsoft.com/dotnet/aspnet:8.0 /etc/passwd /etc/group /scratch/etc/
+RUN grep ":0:" /scratch/etc/group || echo "app:x:0:" >>/scratch/etc/group && mkdir -p /rootfs/etc && cp /scratch/etc/group /rootfs/etc && \
+    grep ":x:1001:" /scratch/etc/passwd || echo "app:x:1001:0::/home/app:/usr/sbin/nologin" >>/scratch/etc/passwd && mkdir -p /rootfs/etc && cp /scratch/etc/passwd /rootfs/etc
+RUN mkdir -m 770 -p /rootfs/home/app
+ENV HOME=/home/build
+WORKDIR /src
+COPY . ./
+RUN dotnet restore .
+RUN dotnet publish --no-restore -c Release -o /rootfs/app .
+RUN chown -R 1001:0 /rootfs/app /rootfs/home/app && chmod -R g=u /rootfs/app /rootfs/home/app
+
+# Build application image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+COPY --from=build-env /rootfs /
+USER 1001:0
+ENV ASPNETCORE_URLS=http://*:8080 \
+    HOME=/home/app
+WORKDIR /app
+ENTRYPOINT ["dotnet", "/app/TestAPI.dll"]
 ```
 ## dotnet publish
 This is a new fearure that was added in the .NET 8.0 SDK (.NET 7.0 as a nuget package). It allows your .net publish to output a container image. The official docs with all the option can be found [here](https://learn.microsoft.com/en-us/dotnet/core/docker/publish-as-container?pivots=dotnet-8-0)
@@ -155,5 +180,51 @@ In the ACR you can see the following image:
 ![api](images/ACRWebapp.png)
 having the nice size of 220.46 MB, but what if i want it to be alpine based, and only support linux-x64. This you can find in the next section.  
 ### Advanced api release
-
+The publish feature allow you to add a lot of arguments. In the following tasks i included some that are useful in my opinion:
+```yaml
+- task: DotNetCoreCLI@2
+  displayName: 'Advanced Publish TestAPI'
+  inputs:
+    projects: 'TestAPI/TestAPI.csproj'
+    command: 'publish'
+    publishWebProjects: false
+    arguments: >-
+        -p ContainerRepository="testapiAlpine"
+        -p ContainerImageTags="\"1.0.0;latest\""
+        -p Version="1.0.0.0"
+        -p ContainerRegistry="myblogcontainerizedemo.azurecr.io"
+        -p ContainerUser="root"
+        -p ContainerFamily="alpine"
+        -p ContainerRuntimeIdentifier="linux-x64"
+    zipAfterPublish: false
+```
+This will create a smaller image with a size of 115.81 MB. Lets go over the arguments:
+- ContainerRepository: the name of the container (This overwrites the name in the csproj file)
+- ContainerImageTags: This is a very tricky argument.You have both ContainerImageTag and ContainerImageTags. If you pick tags the official docs tell you that you need to divide them with a semicolon. But they also tell you that in ci/cd cases you might need to do it like this: `"1.0.0;latest"`. This does not work on Azure devops, after quite a bit of testing i found out that **"\\"1.0.0;latest\\""** does work.
+- Version: the version of the API
+- ContainerRegistry: the ACR
+- ContainerUser: the user that runs the container, i set it to root but it is recommended to set it to a non-root user.
+- ContainerFamily: the typo of base image, i set it to alpine. You can also set the baseimage itself but i recommend the family because this will update with the .net version of the project automatically.
+- ContainerRuntimeIdentifier: the runtime identifier, i set it to linux-x64.
 ### Private nuget feed
+After a talk with our containerization lead he told me one of the thing they also need to deal with are private nuget feeds. This is way easier this way then with dockerfiles. because we use the .net build and then later package it into a docker we don't need to deal with any special it is just the same way as in any other .net project. You just need to add the nuget.config. Do a dotnet restore and then a dotnet publish. The Yaml pipeline:
+```yaml
+- task: DotNetCoreCLI@2
+  displayName: 'Restore NuGet Packages'
+  inputs:
+    command: 'restore'
+    projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
+    feedsToUse: 'config'
+    nugetConfigPath: 'DemoAppWithPrivateNugetFeed/nuget.config'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Basic Publish DemoAppsWithPrivateNugetFeed'
+  inputs:
+    command: 'publish'
+    projects: 'DemoAppWithPrivateNugetFeed/DemoAppWithPrivateNugetFeed.csproj'
+    publishWebProjects: false
+    ZipAfterPublish: false
+    arguments: '/t:PublishContainer -p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
+```
+## Conclusion
+I think this is a very useful and easy feature. I will definitely use this in the future. It removed the need to update the dockerfiles every time you do a .net bump. It is very known way of doing things for our .net developers. But i really do hope that they add the Azure Function support soon. I hope this blog post was useful to you. If you have any questions or remarks feel free to contact me. 
