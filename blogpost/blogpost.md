@@ -226,5 +226,11 @@ After a talk with our containerization lead he told me one of the thing they als
     ZipAfterPublish: false
     arguments: '/t:PublishContainer -p ContainerRegistry=myblogcontainerizedemo.azurecr.io'
 ```
-## Conclusion
+## Drawbacks
+While this is a very easy way to containerize a .NET application, there are some drawbacks. The biggest drawback is that you no longer make the dockerfile. This really reduces you knowledge if the underlying technology. You are also limited in your options. And while there are a lot of arguments you can add to the publish command, after a while you might start to ask if it is not easier to just write a dockerfile. It alo abstracts the containerization process like in the Azure Function example, you see that I set a ContainerBaseImage. But how is this exactly used. As the run image or both the build and run image or in an other way? 
+# Future: .NET Aspire
+There might be another big shift coming in .NET containerization with .NET Aspire. I'm not yet an expert on this but it looks cool because this method supersede the need for things like docker images, container registries. You just make a .NET Aspire application and then you can generate a manifest json file based on the application. This manifest describes the full application and all its dependencies. Then with the Azure developer CLI (azd). Then you can just run azd init & azd up.
+This is looking very cool and you can for sure find more info about it on the internet.
+
+# Conclusion
 I think this is a very useful and easy feature. I will definitely use this in the future. It removed the need to update the dockerfiles every time you do a .net bump. It is very known way of doing things for our .net developers. But i really do hope that they add the Azure Function support soon. I hope this blog post was useful to you. If you have any questions or remarks feel free to contact me. 
